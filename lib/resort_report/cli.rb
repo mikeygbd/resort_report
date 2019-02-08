@@ -17,7 +17,6 @@ def start
   puts "Enter a state from the list below to get a list of the resorts in that state:"
   puts ""
   puts "States: #{location}"
-
   puts ""
   list_by_location
   menu

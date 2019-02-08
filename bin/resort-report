@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require './lib/resort_report'
+
+CLI.new.call
