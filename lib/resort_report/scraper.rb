@@ -16,6 +16,10 @@ attr_accessor  :location, :base_depth, :lifts, :oneday_new_snow, :threeday_new_s
         report = Report.new(name)
         # report.url = "https://www.onthesnow.com#{resort_row.css(".name a").attr("href").value}"
         report.location = "#{resort_row.css(".rRegion.link-light a").text.split(",").shift}"
+        report.oneday_new_snow = "#{resort_row.css("td.rLeft.b.nsnow").text.split("\"")[0]}"
+        report.threeday_new_snow = "#{resort_row.css("td.rLeft.b.nsnow").text.split("\"")[1]}"
+        report.base_depth = "#{resort_row.css("td.rMid.c").text.split("\"")[0]} #{resort_row.css("td.rMid.c").text.split("\"")[1]}"
+        report.lifts =  "#{resort_row.css(".rMid.open_lifts").text}"
         # report.status = self.scrape_report.css(".current_status").text
         # report.trails = self.scrape_report.css("#resort_terrain p.open").first.text
         # report.lifts = self.scrape_report.css("#resort_terrain p.open")[1].text
@@ -23,10 +27,7 @@ attr_accessor  :location, :base_depth, :lifts, :oneday_new_snow, :threeday_new_s
         # report.new_snow = self.scrape_report.css(".predicted_snowfall")[6].text
         # report.parks = self.scrape_report.css("#resort_terrain p.value")[3].text
         # report.description = self.scrape_report.css(".snow_report_comment_wrapper").text
-        report.oneday_new_snow = "#{resort_row.css("td.rLeft.b.nsnow").text.split("\"")[0]}"
-        report.threeday_new_snow = "#{resort_row.css("td.rLeft.b.nsnow").text.split("\"")[1]}"
-        report.base_depth = "#{resort_row.css("td.rMid.c").text.split("\"")[0]} #{resort_row.css("td.rMid.c").text.split("\"")[1]}"
-        report.lifts =  "#{resort_row.css(".rMid.open_lifts").text}"
+
         # @@urls << report.url
     # binding.pry
       report
