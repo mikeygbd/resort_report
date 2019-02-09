@@ -8,27 +8,37 @@ def call
 end
 
 def start
-  Scraper.scrape
+  Scraper.scrape_index
+  @input = ""
+  while @input != "exit"
   puts ""
   puts "To get a list of all resorts type 'list'."
   puts ""
   puts "Or"
   puts ""
-  puts "Enter a state from the list below to get a list of the resorts in that state:"
+  puts "To search by state type 'search'."
   puts ""
-  puts "States: #{location}"
-  puts ""
+  # puts "States: #{location}"
+  # puts ""
+  @input = gets.chomp
+  if @input == "list"
+    list_resorts
+    menu
+  elsif @input == "search"
   list_by_location
   menu
+      end
+    end
+    goodbye
   end
 
   def location
-    locations = []
+    @locations = []
     sorted_reports = Report.all.sort_by {|report| report.location}
     sorted_reports.each do |report|
-      locations << report.location
+      @locations << report.location
     end
-    locations.uniq.join(", ")
+    @locations.uniq.join(", ")
   end
 
   def list_resorts
@@ -38,30 +48,35 @@ def start
   end
 
   def list_by_location
+    puts "Here are all the states to choose from."
+    puts ""
+    puts "States: #{location}"
+    puts ""
+    puts "Which state would you like a list of resorts from?"
+    puts ""
   input = gets.strip.downcase
-  @reports = Report.all
   puts ""
   puts "Resorts in #{input.split(' ').map(&:capitalize).join(' ')}:"
   puts ""
-  @reports.each_with_index do |report, i|
+  Report.all.each_with_index do |report, i|
     if report.location.downcase == input
     puts "#{i + 1}. #{report.name}"
   elsif input == "list"
     list_resorts
-    break
+binding.pry
     end
   end
 end
 
 def menu
-  input = nil
-  while input != "exit"
+  @input = nil
+  while @input != "exit"
     puts ""
     puts "Enter the number of the resort you would like a snow report on or type list or exit:"
     puts ""
-    input = gets.strip.downcase
-    if input.to_i > 0
-      the_report = @reports[input.to_i-1]
+    @input = gets.strip.downcase
+    if @input.to_i > 0
+      the_report = Report.all[@input.to_i-1]
       puts "-----------#{the_report.name}, #{the_report.location}------------"
       puts ""
       puts ""
@@ -73,19 +88,25 @@ def menu
       puts ""
       puts "Lifts Open: #{the_report.lifts}"
       puts ""
+      puts "Website: #{the_report.url}"
       puts ""
-    elsif input == "list"
+      puts ""
+    elsif @input == "list"
       list_resorts
-    elsif input == "exit"
-      puts ""
-      puts "See you tomorrow for more reports!!!"
-      puts ""
-    else
+    elsif @input == "search"
+      list_by_location
+    # elsif @input == "exit"
+    # goodbye
+  elsif @input != "exit" && @input != "list" && @input != "search"
       puts ""
       puts "Not sure what you want."
-      start
       puts ""
     end
   end
-end
+  end
+  def goodbye
+    puts ""
+    puts "See you tomorrow for more reports!!!"
+    puts ""
+  end
 end
