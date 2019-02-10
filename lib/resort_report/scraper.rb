@@ -1,5 +1,5 @@
 class Scraper
-  
+
 attr_accessor :report, :location, :summit_temp, :base_temp, :upper_depth, :lower_depth, :lifts, :yesterday_snow, :today_snow, :tomorrow_snow, :url, :status, :trails, :description, :parks, :lower_conditions, :upper_conditions
 
 STATES = ["Alaska", "Arizona", "California", "Colorado", "Idaho", "Illinois", "Michigan", "Minnesota", "Missouri", "Montana", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "Oregon", "Pennsylvania", "Utah", "Vermont", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
@@ -71,14 +71,12 @@ def self.update_report(report)
   report.lower_conditions = doc.css(".elevation.lower div.surface").text
   report.upper_conditions = doc.css(".elevation.upper div.surface").text
   report.description = doc.css(".snow_report_comment_wrapper").text
-  # doc.css("#resort_terrain p.label").each do |label|
-  #   doc = Nokogiri::HTML(open(report.url))
-  #   if label != "Terrain Parks"
-  #     report.parks = " "
-  #   else
-  #     report.parks = doc.css("#resort_terrain p.#{label} p.value").text
-  #   end
-  # end
+  report.parks = " "
+    if  doc.css("#resort_terrain p.value")[3] == nil
+        report.parks = " "
+    else
+      report.parks = doc.css("#resort_terrain p.value")[3].text
+  end
   report
 end
 end

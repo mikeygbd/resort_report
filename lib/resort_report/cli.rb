@@ -125,9 +125,9 @@ def menu
       puts ""
       puts "Lifts Open: #{updated_report.lifts}".colorize(:cyan)
       puts ""
-      puts "Trails Open: #{updated_report.trails}".colorize(:cyan)
-      # puts ""
-      # puts "Parks Open: #{updated_report.parks}".colorize(:cyan)
+      puts "Runs Open: #{updated_report.trails}".colorize(:cyan)
+      puts ""
+      puts "Parks Open: #{updated_report.parks}".colorize(:cyan)
       puts ""
       puts "Website: #{updated_report.url}".colorize(:cyan)
       puts ""
