@@ -6,6 +6,9 @@ class CLI
 def call
   puts ""
   puts "Welcome to Snow Report!".colorize(:cyan)
+  puts ""
+  puts "Please wait loading reports...".colorize(:light_black)
+  puts ""
   start
 end
 
