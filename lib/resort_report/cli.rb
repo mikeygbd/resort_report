@@ -50,6 +50,9 @@ def start
   end
 
   def list_resorts
+    puts ""
+    puts "Here is a list of all the resorts to choose from:".colorize(:light_blue)
+    puts ""
     Report.all.each_with_index do |report, i|
       puts "#{i + 1}. #{report.name}".colorize(:green)
     end
