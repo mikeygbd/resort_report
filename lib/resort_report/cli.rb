@@ -46,7 +46,6 @@ def start
     @locations.uniq.join(", ")
   end
 
-
   def list_resorts
     Report.all.each_with_index do |report, i|
       puts "#{i + 1}. #{report.name}".colorize(:green)
@@ -80,15 +79,9 @@ def start
     puts ""
     puts "Resorts in #{@input.split(' ').map(&:capitalize).join(' ')}:".colorize(:cyan)
     puts ""
-
-  Report.all.each_with_index do |report, i|
+    Report.all.each_with_index do |report, i|
   if report.location.downcase == @input
-
-  #   @@reports << report
-  # end
-  #   @@reports.each_with_index do |report, i|
     puts "#{i + 1}. #{report.name}".colorize(:green)
-        # end
       end
     end
   end
@@ -105,9 +98,7 @@ def menu
     puts "Type: #{@list}, #{@search} or #{@exit}:"
     @input = gets.strip.downcase
     if @input.to_i > 0
-      # updated_report = Report.all[@input.to_i-1]
       updated_report = Scraper.update_report(Report.all[@input.to_i - 1])
-
       puts ""
       puts "-----------#{updated_report.name}, #{updated_report.location}------------".colorize(:light_cyan)
       puts ""
