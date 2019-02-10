@@ -1,6 +1,8 @@
 #CLI Controller
 class CLI
 
+  @@reports = []
+
 def call
   puts ""
   puts "Welcome to Snow Report!".colorize(:cyan)
@@ -8,7 +10,8 @@ def call
 end
 
 def start
-  Scraper.scrape_index
+  Scraper.scrape_report
+  Scraper.report_page_scrape
   @input = ""
   while @input != "exit"
     @search = "search".colorize(:yellow)
@@ -35,7 +38,8 @@ def start
 
   def location
     @locations = []
-    sorted_reports = Report.all.sort_by {|report| report.location}
+    @reports = Report.all
+    sorted_reports = @reports.sort_by {|report| report.location}
     sorted_reports.each do |report|
       @locations << report.location
     end
@@ -57,22 +61,34 @@ def start
     puts ""
     puts "Which state would you like a list of resorts from?".colorize(:light_blue)
     puts ""
+    puts "Type a state:"
+    puts ""
+    puts "or".colorize(:red)
+    puts ""
+    puts "Type: #{@list} or #{@exit}"
+    puts ""
     @input = gets.strip.downcase
   if @input == "exit"
     goodbye
     exit
-  elsif !location.downcase.include?(@input)
+  elsif @input == "list"
+    list_resorts
+  elsif !location.downcase.include?(@input) && @input != "list"
     puts ""
-    puts "Im sorry, that is not a state from the list".colorize(:light_blue)
+    puts "Im sorry, that is not a state from the list".colorize(:light_red)
   else
     puts ""
     puts "Resorts in #{@input.split(' ').map(&:capitalize).join(' ')}:".colorize(:cyan)
     puts ""
+
   Report.all.each_with_index do |report, i|
   if report.location.downcase == @input
+
+  #   @@reports << report
+  # end
+  #   @@reports.each_with_index do |report, i|
     puts "#{i + 1}. #{report.name}".colorize(:green)
-  elsif @input == "list"
-    list_resorts
+        # end
       end
     end
   end
@@ -89,29 +105,53 @@ def menu
     puts "Type: #{@list}, #{@search} or #{@exit}:"
     @input = gets.strip.downcase
     if @input.to_i > 0
-      the_report = Report.all[@input.to_i-1]
+      # updated_report = Report.all[@input.to_i-1]
+      updated_report = Scraper.update_report(Report.all[@input.to_i - 1])
+
       puts ""
-      puts "-----------#{the_report.name}, #{the_report.location}------------".colorize(:light_cyan)
-      puts ""
-      puts ""
-      puts "New Snow in #{the_report.oneday_new_snow}".colorize(:cyan)
-      puts ""
-      puts "New Snow in #{the_report.threeday_new_snow}".colorize(:cyan)
-      puts ""
-      puts "Snow Depth (Base/Summit): #{the_report.base_depth}".colorize(:cyan)
-      puts ""
-      puts "Lifts Open: #{the_report.lifts}".colorize(:cyan)
-      puts ""
-      puts "Website: #{the_report.url}".colorize(:cyan)
+      puts "-----------#{updated_report.name}, #{updated_report.location}------------".colorize(:light_cyan)
       puts ""
       puts ""
+      puts "Resort Status: #{updated_report.status}".colorize(:cyan)
+      puts ""
+      puts "Temperature At The Summit: #{updated_report.summit_temp}".colorize(:cyan)
+      puts ""
+      puts "Temperature At The Base: #{updated_report.base_temp}".colorize(:cyan)
+      puts ""
+      puts "Yesterdays Snow: #{updated_report.yesterday_snow}.".colorize(:cyan)
+      puts ""
+      puts "Todays Expected Snow: #{updated_report.today_snow}.".colorize(:cyan)
+      puts ""
+      puts "Tomorrows Expected Snow: #{updated_report.tomorrow_snow}.".colorize(:cyan)
+      puts ""
+      puts "Snow Depth At The Base: #{updated_report.lower_depth}".colorize(:cyan)
+      puts ""
+      puts "Snow Depth At The Summit: #{updated_report.upper_depth}".colorize(:cyan)
+      puts ""
+      puts "Snow Conditions At The Base: #{updated_report.lower_conditions}".colorize(:cyan)
+      puts ""
+      puts "Snow Conditions At The Summit: #{updated_report.upper_conditions}".colorize(:cyan)
+      puts ""
+      puts "Lifts Open: #{updated_report.lifts}".colorize(:cyan)
+      puts ""
+      puts "Trails Open: #{updated_report.trails}".colorize(:cyan)
+      puts ""
+      puts "Parks Open: #{updated_report.parks}".colorize(:cyan)
+      puts ""
+      puts "Website: #{updated_report.url}".colorize(:cyan)
+      puts ""
+      puts ""
+      puts "-----------Description------------".colorize(:cyan)
+          puts ""
+          puts "#{updated_report.description}".colorize(:cyan)
+          puts ""
     elsif @input == "list"
       list_resorts
     elsif @input == "search"
       list_by_location
     elsif @input != "exit" && @input != "list" && @input != "search"
       puts ""
-      puts "Not sure what you want.".colorize(:red)
+      puts "Not sure what you want.".colorize(:light_red)
       puts ""
       end
     end
