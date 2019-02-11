@@ -21,7 +21,7 @@ def start
     @list = "list".colorize(:yellow)
     @exit = "exit".colorize(:yellow)
   puts ""
-  puts "To get a list of all resorts type #{@list}."
+  puts "To get a list of all resorts in the United States type #{@list}."
   puts ""
   puts "or".colorize(:red)
   puts ""
@@ -103,7 +103,7 @@ def menu
     puts ""
     puts "Type: #{@list}, #{@search} or #{@exit}:"
     @input = gets.strip.downcase
-    if @input.to_i > 0
+    if @input.to_i > 0 && @input.to_i <= 334
       updated_report = Scraper.update_report(Report.all[@input.to_i - 1])
       puts ""
       puts "-----------#{updated_report.name}, #{updated_report.location}------------".colorize(:light_cyan)

@@ -14,11 +14,13 @@ STATES = ["Alaska", "Arizona", "California", "Colorado", "Idaho", "Illinois", "M
   def self.resort_rows
     self.get_page.css("tbody tr")
   end
-
+# [0..104]
   def self.scrape_link_from_index
-    self.resort_rows[0..104].each do |resort_row|
-      url = "https://www.onthesnow.com#{resort_row.css(".name a").attr("href").value}"
+    self.resort_rows.each do |resort_row|
+      if resort_row.css(".name a").attr("href") != nil
+      url = "https://www.onthesnow.com#{resort_row.css(".name.link-light a").attr("href").value}"
       @@urls << url
+    end
     end
     @@urls
   end
@@ -60,7 +62,6 @@ def self.update_report(report)
   #update object with attributes
   report.status = doc.css(".current_status").text
   report.trails = doc.css("#resort_terrain p.open").first.text
-  report.lifts = doc.css("#resort_terrain p.open")[1].text
   report.summit_temp = doc.css(".temp").first.text
   report.base_temp = doc.css(".temp")[1].text
   report.yesterday_snow = doc.css(".predicted_snowfall")[4].text
@@ -71,8 +72,11 @@ def self.update_report(report)
   report.lower_conditions = doc.css(".elevation.lower div.surface").text
   report.upper_conditions = doc.css(".elevation.upper div.surface").text
   report.description = doc.css(".snow_report_comment_wrapper").text
+  report.lifts = " "
   report.parks = " "
-    if  doc.css("#resort_terrain p.value")[3] == nil
+    if doc.css("#resort_terrain p.open")[1] != nil
+      report.lifts = doc.css("#resort_terrain p.open")[1].text
+    elsif  doc.css("#resort_terrain p.value")[3] == nil
         report.parks = " "
     else
       report.parks = doc.css("#resort_terrain p.value")[3].text
