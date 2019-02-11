@@ -18,6 +18,7 @@ def start
   @input = ""
   while @input != "exit"
     @search = "search".colorize(:yellow)
+    @state = "state".colorize(:yellow)
     @list = "list".colorize(:yellow)
     @exit = "exit".colorize(:yellow)
   puts ""
@@ -25,25 +26,27 @@ def start
   puts ""
   puts "or".colorize(:red)
   puts ""
-  puts "To search by state type #{@search}."
+  puts "To search by state type #{@state}."
   puts ""
   puts "or".colorize(:red)
   puts ""
-  puts "Type in the name of the resort you would like a snow report for."
+  puts "To search by resort name type #{@search}."
   puts ""
   @input = gets.chomp
   if @input == "list"
     list_resorts
     menu
-  elsif @input == "search"
+  elsif @input == "state"
   list_by_location
   menu
-  end
-  Report.all.each do |report|
-  if @input.downcase == report.name.downcase
-    find_by_name(@input)
+  # end
+  # Report.all.each do |report|
+  # if @input.downcase == report.name.downcase
+  #   find_by_name(@input)
+elsif @input == "search"
+  get_name
     menu
-        end
+        # end
       end
     end
     goodbye
@@ -88,6 +91,8 @@ def start
     exit
   elsif @input == "list"
     list_resorts
+  elsif @input == "search"
+    get_name
   elsif !location.downcase.include?(@input) && @input != "list"
     puts ""
     puts "Im sorry, that is not a state from the list".colorize(:light_red)
@@ -99,6 +104,18 @@ def start
   if report.location.downcase == @input
     puts "#{i + 1}. #{report.name}".colorize(:green)
       end
+    end
+  end
+end
+
+def get_name
+  puts ""
+  puts "Type in a resort name to get the snow report for that resort:"
+  puts ""
+  @input = gets.strip.downcase
+  Report.all.each do |report|
+  if @input == report.name.downcase
+    find_by_name(@input)
     end
   end
 end
@@ -157,7 +174,7 @@ def menu
     puts ""
     puts "or".colorize(:red)
     puts ""
-    puts "Type: #{@list}, #{@search} or #{@exit}:"
+    puts "Type: #{@list}, #{@search}, #{@state} or #{@exit}:"
     @input = gets.strip.downcase
     if @input.to_i > 0 && @input.to_i <= 334
       updated_report = Scraper.update_report(Report.all[@input.to_i - 1])
@@ -201,6 +218,8 @@ def menu
     elsif @input == "list"
       list_resorts
     elsif @input == "search"
+      get_name
+    elsif @input == "state"
       list_by_location
     elsif @input != "exit" && @input != "list" && @input != "search"
       puts ""
