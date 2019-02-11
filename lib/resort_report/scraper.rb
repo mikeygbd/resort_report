@@ -14,7 +14,7 @@ STATES = ["Alaska", "Arizona", "California", "Colorado", "Idaho", "Illinois", "M
   def self.resort_rows
     self.get_page.css("tbody tr")
   end
-# [0..104]
+
   def self.scrape_link_from_index
     self.resort_rows.each do |resort_row|
       if resort_row.css(".name a").attr("href") != nil

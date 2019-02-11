@@ -9,12 +9,12 @@ def call
   puts ""
   puts "Please wait loading reports...".colorize(:light_black)
   puts ""
+  Scraper.scrape_report
+  Scraper.report_page_scrape
   start
 end
 
 def start
-  Scraper.scrape_report
-  Scraper.report_page_scrape
   @input = ""
   while @input != "exit"
     @search = "search".colorize(:yellow)
@@ -27,6 +27,10 @@ def start
   puts ""
   puts "To search by state type #{@search}."
   puts ""
+  puts "or".colorize(:red)
+  puts ""
+  puts "Type in the name of the resort you would like a snow report for."
+  puts ""
   @input = gets.chomp
   if @input == "list"
     list_resorts
@@ -34,6 +38,12 @@ def start
   elsif @input == "search"
   list_by_location
   menu
+  end
+  Report.all.each do |report|
+  if @input.downcase == report.name.downcase
+    find_by_name(@input)
+    menu
+        end
       end
     end
     goodbye
@@ -92,6 +102,52 @@ def start
     end
   end
 end
+
+def find_by_name(name)
+    name = name.downcase
+    Report.all.each_with_index do |report, i|
+      if report.name.downcase == name
+        updated_report = Scraper.update_report(report)
+        puts ""
+        puts "-----------#{updated_report.name}, #{updated_report.location}------------".colorize(:light_cyan)
+        puts ""
+        puts ""
+        puts "Resort Status: #{updated_report.status}".colorize(:cyan)
+        puts ""
+        puts "Temperature At The Summit: #{updated_report.summit_temp}".colorize(:cyan)
+        puts ""
+        puts "Temperature At The Base: #{updated_report.base_temp}".colorize(:cyan)
+        puts ""
+        puts "Yesterdays Snow: #{updated_report.yesterday_snow}.".colorize(:cyan)
+        puts ""
+        puts "Todays Expected Snow: #{updated_report.today_snow}.".colorize(:cyan)
+        puts ""
+        puts "Tomorrows Expected Snow: #{updated_report.tomorrow_snow}.".colorize(:cyan)
+        puts ""
+        puts "Snow Depth At The Base: #{updated_report.lower_depth}".colorize(:cyan)
+        puts ""
+        puts "Snow Depth At The Summit: #{updated_report.upper_depth}".colorize(:cyan)
+        puts ""
+        puts "Snow Conditions At The Base: #{updated_report.lower_conditions}".colorize(:cyan)
+        puts ""
+        puts "Snow Conditions At The Summit: #{updated_report.upper_conditions}".colorize(:cyan)
+        puts ""
+        puts "Lifts Open: #{updated_report.lifts}".colorize(:cyan)
+        puts ""
+        puts "Runs Open: #{updated_report.trails}".colorize(:cyan)
+        puts ""
+        puts "Parks Open: #{updated_report.parks}".colorize(:cyan)
+        puts ""
+        puts "Website: #{updated_report.url}".colorize(:cyan)
+        puts ""
+        puts ""
+        puts "-----------Description------------".colorize(:cyan)
+            puts ""
+            puts "#{updated_report.description}".colorize(:cyan)
+            puts ""
+      end
+    end
+  end
 
 def menu
   @input = nil
