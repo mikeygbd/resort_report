@@ -3,9 +3,6 @@ class Scraper
 attr_accessor :report, :location, :summit_temp, :base_temp, :upper_depth, :lower_depth, :lifts, :yesterday_snow, :today_snow, :tomorrow_snow, :url, :status, :trails, :description, :parks, :lower_conditions, :upper_conditions
 
 STATES = ["Alaska", "Arizona", "California", "Colorado", "Idaho", "Illinois", "Michigan", "Minnesota", "Missouri", "Montana", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "Oregon", "Pennsylvania", "Utah", "Vermont", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
-@@urls = []
-@@urls2 = []
-@@pages = []
 
   def self.get_page
     Nokogiri::HTML(open("/Users/michaelsoares/resort_report/bin/index.html"))
@@ -16,46 +13,62 @@ STATES = ["Alaska", "Arizona", "California", "Colorado", "Idaho", "Illinois", "M
   end
 
   def self.scrape_link_from_index
+    url =[]
     self.resort_rows.each do |resort_row|
       if resort_row.css(".name a").attr("href") != nil
-      url = "https://www.onthesnow.com#{resort_row.css(".name.link-light a").attr("href").value}"
-      @@urls << url
+        url << "https://www.onthesnow.com#{resort_row.css(".name.link-light a").attr("href").value}"
+        # binding.pry
+      end
     end
-    end
-    @@urls
+    url
   end
 
   def self.scrape_resort
-  self.scrape_link_from_index.each do |url|
-  resort_page = Nokogiri::HTML(open(url))
-  report_url = "https://www.onthesnow.com/#{resort_page.css(".dropDownContent.conditions a").attr("href").value}"
-  @@urls2 << report_url
+    self.scrape_link_from_index.map do |url|
+      resort_page = Nokogiri::HTML(open(url))
+      report_url = "https://www.onthesnow.com/#{resort_page.css(".dropDownContent.conditions a").attr("href").value}"
+      report_url
+    end
   end
-  @@urls2
-end
 
 def self.scrape_report
   self.scrape_resort.each do |url|
-    @page = Nokogiri::HTML(open(url))
-    @report = Report.new
-    @report.url = url
+    doc = Nokogiri::HTML(open(url))
+    report = Report.new
+    report.url = url
   end
-  @report
 end
 
-  def self.report_page_scrape
-    Report.all.each do |report|
-      doc = Nokogiri::HTML(open(report.url))
-      report.name = doc.css(".resort_name").text
-      report.location = ''
-    doc.css(".relatedRegions a").each do |location|
-      if STATES.include?(location.text)
-        report.location = location.text
+def self.report_page_scrape
+Report.all.each do |report|
+  doc = Nokogiri::HTML(open(report.url))
+  report.name = doc.css(".resort_name").text
+  report.location = ''
+doc.css(".relatedRegions a").each do |location|
+  if STATES.include?(location.text)
+    report.location = location.text
       end
     end
-    report
+report
   end
 end
+
+  # def self.find_url_from_name(report)
+  #     self.scrape_resort.each do |url|
+  #       @url = url
+  #       if @url != nil
+  #       name1 = @url.split("/")[5]
+  #       name2 = name1.split("-")
+  #       @name = name2.join(" ")
+  #
+  #     end
+  #       if report.name == @name
+  #         report.url = @url
+  #     end
+  #   end
+  # end
+
+
 
 def self.update_report(report)
   doc = Nokogiri::HTML(open(report.url))
@@ -72,15 +85,13 @@ def self.update_report(report)
   report.lower_conditions = doc.css(".elevation.lower div.surface").text
   report.upper_conditions = doc.css(".elevation.upper div.surface").text
   report.description = doc.css(".snow_report_comment_wrapper").text
-  report.lifts = " "
-  report.parks = " "
     if doc.css("#resort_terrain p.open")[1] != nil
       report.lifts = doc.css("#resort_terrain p.open")[1].text
-    elsif  doc.css("#resort_terrain p.value")[3] == nil
-        report.parks = " "
-    else
-      report.parks = doc.css("#resort_terrain p.value")[3].text
-  end
+    end
+    if  doc.css("#resort_terrain p.value")[3] != nil
+        report.parks = doc.css("#resort_terrain p.value")[3].text
+
+      end
   report
-end
+  end
 end

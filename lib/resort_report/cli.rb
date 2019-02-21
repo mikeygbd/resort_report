@@ -39,14 +39,9 @@ def start
   elsif @input == "state"
   list_by_location
   menu
-  # end
-  # Report.all.each do |report|
-  # if @input.downcase == report.name.downcase
-  #   find_by_name(@input)
 elsif @input == "search"
   get_name
     menu
-        # end
       end
     end
     goodbye
@@ -113,16 +108,20 @@ def get_name
   puts "Type in a resort name to get the snow report for that resort:"
   puts ""
   @input = gets.strip.downcase
-  Report.all.each do |report|
+  Report.all.each_with_index do |report, i|
+    @name_array = report.name.downcase.split(" ")
   if @input == report.name.downcase
     find_by_name(@input)
+  elsif @name_array.include?(@input)
+      puts ""
+      puts "#{i + 1}. #{report.name}".colorize(:green)
     end
   end
 end
 
 def find_by_name(name)
     name = name.downcase
-    Report.all.each_with_index do |report, i|
+    Report.all.each do |report|
       if report.name.downcase == name
         updated_report = Scraper.update_report(report)
         puts ""
@@ -159,9 +158,9 @@ def find_by_name(name)
         puts ""
         puts ""
         puts "-----------Description------------".colorize(:cyan)
-            puts ""
-            puts "#{updated_report.description}".colorize(:cyan)
-            puts ""
+        puts ""
+        puts "#{updated_report.description}".colorize(:cyan)
+        puts ""
       end
     end
   end
@@ -212,9 +211,9 @@ def menu
       puts ""
       puts ""
       puts "-----------Description------------".colorize(:cyan)
-          puts ""
-          puts "#{updated_report.description}".colorize(:cyan)
-          puts ""
+      puts ""
+      puts "#{updated_report.description}".colorize(:cyan)
+      puts ""
     elsif @input == "list"
       list_resorts
     elsif @input == "search"
